@@ -1,13 +1,15 @@
+# Author: Jose Luis Izquierdo
+# Description: This is script is made for installing
+# HASS (Home assistant) using venv method, optionally you can configure a
+# raspberry pi3/4 before installing anything
+
 #!/bin/bash 
 source ./lib.sh # Import functions
 
 # MAIN
 
 # Abort if the user executing the script doesn't have root permissions
-MESSAGE="Sorry, but you need to execute this script with root permissions"
-if [ ! $(id -u) -eq 0 ]; then
-   abort_script "$MESSAGE"
-fi
+check_root
 
 INFO_MESSAGE="Before going any further this script is just compatible with
 debian based Linux distributions but right now is only tested on Raspbian buster

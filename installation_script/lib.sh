@@ -27,10 +27,12 @@ make_question()
     do
 	case $option in
 	    "Yes")
+		clear
 		if [ -n "$2" ]; then eval $2; fi
 		break
 		;;
 	    "No")
+		clear
 		if [ -n "$3" ]; then eval $3; fi
 		break
 		;;
@@ -38,7 +40,6 @@ make_question()
 	esac
     done
 }
-
 
 # DESCRIPTION:  Check if a user exists in the system
 # ARGS: $1 is the user name to look for.
@@ -54,8 +55,16 @@ check_user()
 # Returns Nothing
 abort_script()
 {
-    echo $1
+    echo -e $1
     exit 1
+}
+
+check_root()
+{    
+    MESSAGE="Sorry, but you need to execute this script with root permissions"
+    if [ ! $(id -u) -eq 0 ]; then
+	abort_script "$MESSAGE"
+    fi
 }
 
 configure_raspi()
