@@ -2,6 +2,15 @@
 
 # Functions
 
+# DESCRIPTION: Abort script execution displaying a message
+# ARGS: $1: Message to be displayed before aborting.
+# Returns Nothing
+abort_script()
+{
+    echo -e "$1"
+    exit 1
+}
+
 # DESCRIPTION: Look for an expression in a given file
 # ARGS: $1 is the pattern to look for in the file path specified by $2
 # Returns 0 if the expression is found or 1 otherwise
@@ -50,13 +59,13 @@ check_user()
     echo $?
 }
 
-# DESCRIPTION: Abort script execution displaying a message
-# ARGS: $1: Message to be displayed before aborting.
-# Returns Nothing
-abort_script()
+# DESCRIPTION: Check if the user executing the script is root
+check_root()
 {
-    echo -e $1
-    exit 1
+    MESSAGE="Sorry, but you need to execute this script with root permissions"
+    if [ ! $(id -u) -eq 0 ]; then
+	abort_script "$MESSAGE"
+    fi   
 }
 
 check_root()

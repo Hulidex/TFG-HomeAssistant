@@ -4,7 +4,7 @@
 # raspberry pi3/4 before installing anything
 
 #!/bin/bash 
-source ./lib.sh # Import functions
+source ./lib/lib_common.sh
 
 # MAIN
 
