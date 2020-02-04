@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# First source lib_common.sh and them this file, otherwise anything will work
-# correctly...
-
 check_packages()
 {
     arr=("$@")
@@ -158,4 +155,78 @@ please try again..."
 	    make_question "$MESSAGE" 'echo "Continuing"' 'abort_script "Aborting"'
 	fi
     done
+}
+
+format_sd()
+{
+    fdisk $SELECTED_DEVICE << EOF
+g
+w
+EOF
+}
+
+write_zeros()
+{
+    pv < /dev/zero > $SELECTED_DEVICE 2> /dev/null
+}
+
+burn_image()
+{
+    pv < $IMAGE > $SELECTED_DEVICE
+}
+
+enable_rasp_ssh()
+{
+    #Look for boot partion
+    blockdev=$(lsblk -J | jq ".blockdevices[0] | .name" | sed 's/"//g')
+    count=0
+    while [ "$blockdev" != "null" ] && [ $count -lt 500 ]; do  # Second condition avoid infinite loops
+	echo "$SELECTED_DEVICE" | grep -oq "$blockdev"
+	if [ $? -eq 0 ]; then
+	    sd_boot_part=$(lsblk -J | jq ".blockdevices[$count].children[0].name" | sed 's/"//g')
+	    if [ "$sd_boot_part" = "null" ]; then
+		MESSAGE="Something went wrong when the image was burned, and
+the boot partition couldn't be found, Is the image broken or corrupted?"
+		abort_script "$MESSAGE"
+	    fi
+	fi
+
+
+	((count++))
+	blockdev=$(lsblk -J | jq ".blockdevices[$count] | .name" | sed 's/"//g')
+    done
+
+    if [ -z "$sd_boot_part" ]; then
+	MESSAGE="Something went wrong detecting partitions associated with device
+$SELECTED_DEVICE, abort_scripting"
+	abort_script "$MESSAGE"
+    fi
+
+    # Mount boot partition
+    mount_dir="/run/media/boot_partition"
+    mkdir -p $mount_dir
+    echo "Mounting sd boot partition..."
+    mount "/dev/$sd_boot_part" $mount_dir
+    if [ $? -gt 0 ]; then
+	abort_script "Can't mount boot partition aborting..."
+    fi
+
+    # Create ssh file into boot partition to enable ssh-service in raspberry
+    echo "Activating ssh service by creating 'ssh' file..."
+    file="$mount_dir/ssh"
+    touch $file
+    if ! [ -e $file ]; then
+	abort_script "Can't create ssh file into boot partition aborting"
+    fi
+
+    sync
+
+    # Unmount partition
+    echo "Unmounting boot partition..."
+    umount $mount_dir
+    if [ $? -gt 0 ]; then
+	MESSAGE="Can't unmount sd boot partition, but the installation was
+correct, unmount it manually and everything should be fine."
+	echo -e "$MESSAGE"
+    fi
 }

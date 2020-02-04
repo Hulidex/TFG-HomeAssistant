@@ -43,5 +43,26 @@ QUESTION="If you already have a raspbian buster lite image, you can select it
 from your file system, otherwise, Do you want to download one right now?"
 make_question "$QUESTION" "download_image" "select_image_from_folder"
 
+# Format SD
+echo -e "Formatting SD..."
+format_sd
+echo -e "done"
 
+# Optional: SD zero filling
+QUESTION="This step is totally optional, Do you want to write zeros on the
+selected device? (Filling a device with zeros is a low level way of format a
+device, this method is cleaner but can take several minutes depending on the
+device's size)"
 
+make_question "$QUESTION" "write_zeros" 'echo "Zero filling operation aborted"'
+
+# Burn raspbian image
+echo -e "Burning image..."
+burn_image
+
+# Enable ssh-service into raspberry
+enable_rasp_ssh
+
+MESSAGE="Installation finished, extract sd device and insert it into the
+raspberry"
+echo -e "$MESSAGE"
