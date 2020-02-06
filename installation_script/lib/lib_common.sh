@@ -68,14 +68,7 @@ check_root()
     fi   
 }
 
-check_root()
-{    
-    MESSAGE="Sorry, but you need to execute this script with root permissions"
-    if [ ! $(id -u) -eq 0 ]; then
-	abort_script "$MESSAGE"
-    fi
-}
-
+# DESCRIPTIOM: Configure basic raspberry's configuration
 configure_raspi()
 {
 # For security reasons change pi's password
