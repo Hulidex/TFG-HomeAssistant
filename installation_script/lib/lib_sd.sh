@@ -51,7 +51,6 @@ continue, all data in that device will be lost, Are you sure?"
     done
 }
 
-
 # DESCRIPTION: This function tries to detect a block device which was inserted by
 # the user. For being able to detect the device are necessary two phases, The
 # first face scan all the computer's device blocks and store them, then the
@@ -142,6 +141,7 @@ https://www.raspberrypi.org/downloads/raspbian/\nDo you want to continue?"
 
     make_question "$QUESTION" 'echo "Continuing"' 'abort_script "Aborting"'
 }
+
 
 # DESCRIPTION: Initialize 'IMAGE' variable with a custom raspbian-buster image
 # given by the user. This function doesn't check if it is a valid image,

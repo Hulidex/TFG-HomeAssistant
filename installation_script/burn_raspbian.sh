@@ -66,3 +66,4 @@ enable_rasp_ssh
 MESSAGE="Installation finished, extract sd device and insert it into the
 raspberry"
 echo -e "$MESSAGE"
+

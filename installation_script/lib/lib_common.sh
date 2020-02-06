@@ -37,11 +37,13 @@ make_question()
 	case $option in
 	    "Yes")
 		clear
+
 		if [ -n "$2" ]; then eval $2; fi
 		break
 		;;
 	    "No")
 		clear
+
 		if [ -n "$3" ]; then eval $3; fi
 		break
 		;;
