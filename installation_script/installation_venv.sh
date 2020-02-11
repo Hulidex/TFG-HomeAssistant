@@ -5,6 +5,7 @@
 
 #!/bin/bash 
 source ./lib/lib_common.sh
+source ./lib/lib_config.sh
 
 # MAIN
 
