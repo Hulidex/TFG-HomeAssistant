@@ -32,7 +32,7 @@ Type 'no' if you want to quit the script without making any changes."
 
     EXIT_FLAG=1
     while [ $EXIT_FLAG -eq 1 ]; do
-	read USER_INPUT
+	read -p ">> " USER_INPUT
 
 	if [ $USER_INPUT = "no" ]; then abort_script "Aborting"; fi
 
@@ -159,7 +159,7 @@ may get corrupted or broken"
 
     EXIT_FLAG=1
     while [ $EXIT_FLAG -eq 1 ]; do
-	read USER_INPUT
+	read -p ">> " USER_INPUT
 
 	if [ $USER_INPUT = "no" ]; then abort_script "Aborting"; fi
 

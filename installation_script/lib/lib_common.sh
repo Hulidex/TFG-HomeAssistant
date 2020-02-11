@@ -70,33 +70,72 @@ check_root()
     fi   
 }
 
-# DESCRIPTIOM: Configure basic raspberry's configuration
-configure_raspi()
+# DESCRIPTION: Check if the machine has a specific operating system
+# ARGUMENTS: Use the first argument to indicate the operating system you want to
+# fetch
+# RETURNS: 0 if the machine has the given operating system and 1 otherwise
+check_so()
 {
-# For security reasons change pi's password
-echo "Please for security reasons type a new password for the pi user" 
-passwd pi
-if [ ! $? -eq 0 ]
-then
-    echo "Aborting"
-    exit 1
-fi
+    lsb_release -a | grep -qoi "$1" &> /dev/null
+    echo $?
+}
+
+# DESCRIPTION: Check if a given user exists and then add it to group docker.
+# Is an interactive function because it asks the user for the user name.
+# ARGUMENTS: None
+# RETURNS: Nothing
+add_user_to_docker()
+{
+    while :; do
+	echo "Type the name of the user who will run docker: "
+	read -p ">> " USER_INPUT
+
+	if [ $(check_user $USER_INPUT) -eq 0 ]; then
+	    usermod -aG docker $USER_INPUT
+	    break
+	else
+	    clear
+	    echo "The user '$USER_INPUT' doesn't exist, please try again"
+	fi
+    done
+}
 
 
-# update and upgrade the system
-apt update -y && apt upgrade -y
 
-# Add to bashrc an environment variable to avoid issues with termite shells.
-COMMAND="export TERM=xterm-color"
-FILE="/etc/bash.bashrc"
+# DESCRIPTION: Set a flag needed to install Home Assistant properly
+# It ask the user for the specific flag.
+# ARGUMENTS: None
+# RETURNS: Nothing
+set_hass_flag()
+{
+    SUPPORTED_FLAGS="intel-nuc
+odroid-c2
+odroid-n2
+odroid-xu
+qemuarm
+qemuarm-64
+qemux86
+qemux86-64
+raspberrypi
+raspberrypi2
+raspberrypi3
+raspberrypi4
+raspberrypi3-64
+raspberrypi4-64
+tinker"
 
-if [ $(find_expr "$COMMAND" "$FILE") -eq 1 ]; then
-   echo $COMMAND >> $FILE
-   echo "Added environment variable named TERM with value 'xterm-color'"
+    while :;do
+	echo -e "Please type the flag for your machine"
+	read -p ">> " HASS_FLAG
+	echo -e "$SUPPORTED_FLAGS" | grep -qo $HASS_FLAG
 
-fi
-
-# Install neovim text editor.
-COMMAND="apt install -y neovim"
-make_question "Do you want to install Neo vim text editor?" "$COMMAND"
+	if [ $? -eq 0 ]; then
+	    echo "Setting flag to '$HASS_FLAG'"
+	    break
+	else
+	    clear
+	    echo "The flag '$HASS_FLAG' doesn't exist, please try again"
+	    echo -e "It must be one of the following list: \n$SUPPORTED_FLAGS"
+	fi
+    done
 }
