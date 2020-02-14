@@ -1,2 +1,5 @@
 *~
 *test*
+.projectile
+*.el
+.pio
