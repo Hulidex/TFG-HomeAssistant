@@ -1,0 +1,40 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# MQTT
+mqtt:
+    broker: 192.168.1.130
+    port: 64444
+    client_id: hass_core_hulidex
+    keepalive: 60
+
+switch:
+  - platform: mqtt
+    name: "Light 1"
+# Command topic settings - HASS will publish to this topic
+    command_topic: "/home/Jolu Bedroom/light1/set"
+    payload_on: "turn on"
+    payload_off: "turn off"
+# State topic settings - HASS will subscribe to this topic
+    state_topic: "/home/Jolu Bedroom/light1/status"
+    state_on: "on"
+    state_off: "off"
+    qos: 2
+# Availability settings - HASS will subscribe to this topic to know if
+# the device is available.
+    availability_topic: "/home/Jolu Bedroom/light1/available"
+    payload_available: "online"
+    payload_not_available: "offline"
