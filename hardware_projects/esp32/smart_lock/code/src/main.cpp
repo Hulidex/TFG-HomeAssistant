@@ -91,13 +91,13 @@ void receive_payload(const char raw_topic[], byte* raw_payload, unsigned int len
   String topic(raw_topic);
   String payload = byte_to_String(raw_payload, length);
 
-  if(topic == "/home/Jolu Bedroom/light1/set"){
-    if (payload == "turn on"){
-      servoLock.write(180);
-      mqtt_client.publish("/home/Jolu Bedroom/light1/status", "on");
-    } else {
+  if(topic == "/home/Jolu Bedroom/lock1/set"){
+    if (payload == "lock"){
       servoLock.write(0);
-      mqtt_client.publish("/home/Jolu Bedroom/light1/status", "off");
+      mqtt_client.publish("/home/Jolu Bedroom/lock1/status", "lock");
+    } else {
+      servoLock.write(180);
+      mqtt_client.publish("/home/Jolu Bedroom/lock1/status", "unlock");
     }
   }
 }
@@ -123,9 +123,9 @@ void connect_mqtt_broker() {
   }
 
   // Subscribe and publish to topics
-  mqtt_client.publish("/home/Jolu Bedroom/light1/available", "online", true);
-  mqtt_client.publish("/home/Jolu Bedroom/light1/status", "off", true);
-  mqtt_client.subscribe("/home/Jolu Bedroom/light1/set", 1);
+  mqtt_client.publish("/home/Jolu Bedroom/lock1/available", "online", true);
+  //mqtt_client.publish("/home/Jolu Bedroom/lock1/status", "unlock", true);
+  mqtt_client.subscribe("/home/Jolu Bedroom/lock1/set", 1);
 }
 void no_wait_delay(unsigned long milli_seconds, void (*f)()){
   unsigned long time_now;
@@ -171,10 +171,10 @@ void setup() {
 
 void loop() {
   if (powered_off) {
-    servoLock.write(0);
-    mqtt_client.publish("/home/Jolu Bedroom/light1/status", "off", true);
-    mqtt_client.publish("/home/Jolu Bedroom/light1/available", "offline", true);
-    mqtt_client.unsubscribe("/home/Jolu Bedroom/light1/set");
+    servoLock.write(180);
+    mqtt_client.publish("/home/Jolu Bedroom/lock1/status", "unlock", true);
+    mqtt_client.publish("/home/Jolu Bedroom/lock1/available", "offline", true);
+    mqtt_client.unsubscribe("/home/Jolu Bedroom/lock1/set");
     delay(5000);
     mqtt_client.disconnect();
     WiFi.disconnect();
